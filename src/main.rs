@@ -1,4 +1,4 @@
-use std::{collections::btree_map::Entry, env, io::{stdin, stdout, Write}, path::{self, Path}, process::{Child, Command, Output, Stdio}};
+use std::{env, ffi::{OsStr, OsString}, fs::{self, read}, io::{stdin, stdout, Write}, os::windows, path::{self, Display, Path}, process::{Child, Command, Stdio}};
 
 use walkdir::{DirEntry, WalkDir};
 
@@ -58,6 +58,25 @@ fn main() {
                     }
                     
                     previous_command = None;
+            },
+            "cat" => {
+
+                let mut path: &str = match args.peekable().peek().map(|x| *x) {
+                    Some(x) => x,
+                    _ => {
+
+                        continue;
+                    }
+                };
+                let read = match fs::read(path) {
+                    Ok(x) => x,
+                    Err(e) => {
+                        eprintln!("{:?}", e);
+                        continue;
+                    }
+                };
+                println!("{}", String::from_utf8_lossy(&read));
+                previous_command = None;
             },
             "exit" => return,
             command => {
