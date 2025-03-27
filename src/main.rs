@@ -1,4 +1,4 @@
-use std::{env, fs::{self, read}, io::{stdin, stdout, Write}, path::{Display, Path}, process::{Child, Command, Stdio}};
+use std::{env, ffi::{OsStr, OsString}, fs::{self, read}, io::{stdin, stdout, Write}, os::windows, path::{self, Display, Path}, process::{Child, Command, Stdio}};
 
 use walkdir::{DirEntry, WalkDir};
 
@@ -58,8 +58,10 @@ fn main() {
             },
             "cat" => {
 
-                let mut x = &args.peekable().peek();
-                let read = fs::read(x);
+                let mut x:&Option<&&str> = &args.peekable().peek();
+                let c = OsStr::new(x);
+                let path:&Path = Path::new(".");
+                let read = fs::read(path);
                 println!("{}", read);
                 previous_command = None;
             },
