@@ -1,4 +1,6 @@
-use std::{env, io::{stdin, stdout, Write}, path::{self, Path}, process::{Child, Command, Output, Stdio}};
+use std::{collections::btree_map::Entry, env, io::{stdin, stdout, Write}, path::{self, Path}, process::{Child, Command, Output, Stdio}};
+
+use walkdir::{DirEntry, WalkDir};
 
 fn main() {
     loop {
@@ -33,6 +35,27 @@ fn main() {
                 previous_command = None;
 
             },
+            "ls" => {
+                    fn is_hidden(entry: &DirEntry) -> bool {
+                        entry
+                            .file_name()
+                            .to_str()
+                            .map(|s| s.starts_with('.'))
+                            .unwrap_or(false)
+                    }
+
+                    for entry in WalkDir::new(".")
+                        .min_depth(1)
+                        .max_depth(1)
+                        .into_iter()
+                        .filter_entry(|e| !is_hidden(e))
+                    {
+                        let entry = entry.unwrap();
+                        println!("{}", entry.path().display());
+                    }
+                    
+                    previous_command = None;
+            },
             "exit" => return,
             command => {
                 let stdin = previous_command
@@ -63,5 +86,5 @@ fn main() {
     if let Some(mut final_command) = previous_command {
         final_command.wait();
     }
-    }
+}
 }
