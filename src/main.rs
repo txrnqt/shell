@@ -21,7 +21,10 @@ fn main() {
         while let Some(command) = commands.next() {
 
         let mut parts = input.trim().split_whitespace();
-        let command = parts.next().unwrap();
+        let command = match parts.next() {
+            Some(x) => x,
+            _ => continue
+        };
         let args = parts;
 
         match command {
