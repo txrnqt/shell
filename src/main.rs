@@ -61,11 +61,21 @@ fn main() {
             },
             "cat" => {
 
-                let mut x:&Option<&&str> = &args.peekable().peek();
-                let c = OsStr::new(x);
-                let path:&Path = Path::new(".");
-                let read = fs::read(path);
-                println!("{}", read);
+                let mut path: &str = match args.peekable().peek().map(|x| *x) {
+                    Some(x) => x,
+                    _ => {
+
+                        continue;
+                    }
+                };
+                let read = match fs::read(path) {
+                    Ok(x) => x,
+                    Err(e) => {
+                        eprintln!("{:?}", e);
+                        continue;
+                    }
+                };
+                println!("{}", String::from_utf8_lossy(&read));
                 previous_command = None;
             },
             "exit" => return,
