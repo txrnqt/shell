@@ -1,4 +1,4 @@
-use std::{collections::btree_map::Entry, env, io::{stdin, stdout, Write}, path::{self, Path}, process::{Child, Command, Output, Stdio}};
+use std::{env, fs::{self, read}, io::{stdin, stdout, Write}, path::{Display, Path}, process::{Child, Command, Stdio}};
 
 use walkdir::{DirEntry, WalkDir};
 
@@ -55,6 +55,13 @@ fn main() {
                     }
                     
                     previous_command = None;
+            },
+            "cat" => {
+
+                let mut x = &args.peekable().peek();
+                let read = fs::read(x);
+                println!("{}", read);
+                previous_command = None;
             },
             "exit" => return,
             command => {
