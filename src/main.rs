@@ -7,9 +7,9 @@ fn main() {
         // > = character promt
         // flush make sure it prints before read_line
 
-        // let mut curent_dir: = Path::display(&self);
+        let mut curent_dir = env::current_dir().unwrap();
 
-        print!("> ");
+        print!("{} > ", curent_dir.display());
         stdout().flush();
 
         let mut input  = String::new();
