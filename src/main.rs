@@ -1,5 +1,4 @@
 use std::{env, ffi::{OsStr, OsString}, fs::{self, read}, io::{stdin, stdout, Write}, os::windows, path::{self, Display, Path}, process::{Child, Command, Stdio}};
-
 use walkdir::{DirEntry, WalkDir};
 
 fn main() {
@@ -77,9 +76,16 @@ fn main() {
                 };
                 println!("{}", String::from_utf8_lossy(&read));
                 previous_command = None;
-            },"clear" => {
+            },
+            "clear" => {
                 print!("{esc}c", esc = 27 as char);
                 previous_command = None
+            },
+            "whoami" => {
+                let user_name:String = whoami::username();
+                println!("{}", user_name);
+
+                previous_command = None;
             },
             "exit" => return,
             command => {

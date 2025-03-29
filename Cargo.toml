@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 walkdir = "2.5.0"
+whoami = "1.6.0"
