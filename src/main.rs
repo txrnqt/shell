@@ -77,6 +77,9 @@ fn main() {
                 };
                 println!("{}", String::from_utf8_lossy(&read));
                 previous_command = None;
+            },"clear" => {
+                print!("{esc}c", esc = 27 as char);
+                previous_command = None
             },
             "exit" => return,
             command => {
