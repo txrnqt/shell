@@ -1,5 +1,6 @@
 use std::{env, ffi::{OsStr, OsString}, fs::{self, read}, io::{stdin, stdout, Write}, os::windows, path::{self, Display, Path}, process::{Child, Command, Stdio}};
 use walkdir::{DirEntry, WalkDir};
+use chrono::{prelude, Local};
 
 fn main() {
     loop {
@@ -59,8 +60,7 @@ fn main() {
                     previous_command = None;
             },
             "cat" => {
-
-                let mut path: &str = match args.peekable().peek().map(|x| *x) {
+                let path: &str = match args.peekable().peek().map(|x| *x) {
                     Some(x) => x,
                     _ => {
 
@@ -86,6 +86,21 @@ fn main() {
                 println!("{}", user_name);
 
                 previous_command = None;
+            },
+            "date" => {
+                let date:prelude::DateTime<Local> = Local::now();
+                println!("{}", date);
+            }, 
+            "echo" => {
+                let echo: &str = match args.peekable().peek().map(|x| *x) {
+                    Some(x) => x,
+                    _ => {
+
+                        continue;
+                    }
+                };
+
+                println!("{}", echo);
             },
             "exit" => return,
             command => {
