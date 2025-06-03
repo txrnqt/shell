@@ -1,6 +1,6 @@
 use command::Command;
 use errors::CrateResult;
-use helpers::pwd;
+use utils::pwd;
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt},
     task::JoinHandle,
@@ -8,7 +8,7 @@ use tokio::{
 
 mod command;
 mod errors;
-mod helpers;
+mod utils;
 
 
 fn spawn_user_input_handler() -> JoinHandle<CrateResult<()>> {
@@ -22,7 +22,7 @@ fn spawn_user_input_handler() -> JoinHandle<CrateResult<()>> {
         stdout.write(b"Welcome to the shell!\n").await?;
 
         stdout.write(pwd()?.as_bytes()).await?;
-        stdout.write(b"\n>").await?;
+        stdout.write(b"\n> ").await?;
         stdout.flush().await?;
 
         while let Ok(Some(line)) = reader.next_line().await {
@@ -54,28 +54,39 @@ async fn handle_new_line(line: &str) -> CrateResult<Command> {
 
     match command.clone() {
         Command::Ls => {
-            helpers::ls()?;
+            utils::ls()?;
         }
         Command::Echo(s) => {
             println!("{}", s);
         }
         Command::Pwd => {
-            println!("{}", helpers::pwd()?);
+            println!("{}", utils::pwd()?);
         }
-        // Command::Cd(s) => {
-        //     helpers::cd(&s)?;
-        // }
-        // Command::Touch(s) => {
-        //     helpers::touch(&s)?;
-        // }
-        // Command::Rm(s) => {
-        //     helpers::rm(&s)?;
-        // }
+        Command::Cd(s) => {
+            utils::cd(&s)?;
+        }
+        Command::Touch(s) => {
+            utils::touch(&s)?;
+        }
+        Command::Rm(s) => {
+            utils::rm(&s)?;
+        }
         Command::Cat(s) => {
-            let contents = helpers::cat(&s)?;
+            let contents = utils::cat(&s)?;
 
             println!("{}", contents);
         }
+        Command::Clear => {
+            println!("{}[2J", 27 as char);
+        }
+        Command::Date => {
+            let date = utils::date()?;
+
+            println!("{}", date);
+        }
+        Command::Mkdir(s) => {
+            let _ = utils::mkdir(&s);
+        },
         _ => {}
     }
     Ok(command)

@@ -1,4 +1,4 @@
-use anyhow::anyhow;
+use anyhow::{anyhow, Ok};
 
 #[derive(Clone, Debug)]
 pub enum Command {
@@ -10,6 +10,9 @@ pub enum Command {
     Touch(String),
     Rm(String),
     Cat(String),
+    Clear,
+    Date,
+    Mkdir(String),
 } 
 
 impl TryFrom<&str> for Command {
@@ -54,6 +57,15 @@ impl TryFrom<&str> for Command {
                     Err(anyhow!("cat requires an argument"))
                 } else {
                     Ok(Command::Cat(split_value[1..].join(" ")))
+                }
+            }
+            "clear" => Ok(Command::Clear),
+            "date" => Ok(Command::Date),
+            "mkdir" => {
+                if split_value.len() < 2 {
+                    Err(anyhow!("mkdir requires an argument"))
+                } else {
+                    Ok(Command::Mkdir(split_value[1..].join(" ")))
                 }
             }
             _ => Err(anyhow!("Unknown command!!!")),
