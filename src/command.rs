@@ -13,6 +13,15 @@ pub enum Command {
     Clear,
     Date,
     Mkdir(String),
+    Mv(String),
+    Grep,
+    Hostname,
+    Kill(String),
+    Less,
+    Ln,
+    More,
+    Ping,
+
 } 
 
 impl TryFrom<&str> for Command {
@@ -66,6 +75,14 @@ impl TryFrom<&str> for Command {
                     Err(anyhow!("mkdir requires an argument"))
                 } else {
                     Ok(Command::Mkdir(split_value[1..].join(" ")))
+                }
+            }
+            "hostname" => Ok(Command::Hostname),
+            "mv" => {
+                if split_value.len() < 2 {
+                    Err(anyhow!("mv requires an argument"))
+                } else {
+                    Ok(Command::Mv(split_value[1..].join(" ")))
                 }
             }
             _ => Err(anyhow!("Unknown command!!!")),

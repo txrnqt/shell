@@ -1,5 +1,6 @@
 use std::fs;
 use chrono::prelude::*;
+use whoami;
 
 use anyhow::Ok;
 
@@ -35,10 +36,8 @@ pub fn cd(path: &str) -> CrateResult<()> {
     Ok(())
 }
 
-pub fn rm(path: &str) -> CrateResult<()> {
-    let is_dir = fs::metadata(path).unwrap();
-    
-    if is_dir.is_dir() {
+pub fn rm(path: &str) -> CrateResult<()> {    
+    if is_dir(path) {
         let _ = fs::remove_dir(path)?;
     } else {
         let _ = fs::remove_file(path)?;
@@ -63,4 +62,43 @@ pub fn mkdir(path: &str) -> CrateResult<()> {
     let _ = fs::create_dir(path)?;
 
     Ok(())
+}
+
+pub fn hostname() -> CrateResult<String> {
+    let hostname = whoami::devicename().to_string();
+
+    Ok(hostname)
+}
+
+pub fn mv(path: &str) -> CrateResult<()> {
+    let paths: Vec<&str> = path.split_whitespace().collect(); 
+    
+    if is_dir(paths[0]) && is_real(paths[1]) {
+        let _ = fs::copy(paths[0], paths[1]);
+        let _ = fs::remove_dir(paths[0]);
+    } else if is_dir(paths[0]) && is_real(paths[1]) == false {
+        let _ = mkdir(paths[1]);
+        let _ = fs::copy(paths[0], paths[1]);
+        let _ = fs::remove_dir(paths[0]);
+    } else if is_dir(paths[0]) == false && is_real(paths[1]) == false {
+        let _ = fs::File::create(paths[1]);
+        let _ = fs::copy(paths[0], paths[1]);
+        let _ = fs::remove_file(paths[0]);
+    } else {
+        let _ = fs::copy(paths[0], paths[1]);
+        let _ = fs::remove_file(paths[0]);
+    }
+    Ok(())
+}
+
+fn is_real(path: &str) -> bool {
+    fs::metadata(path).is_ok()
+}
+
+fn is_dir(path: &str) -> bool {
+    if fs::metadata(path).unwrap().is_dir() {
+        true
+    } else {
+        false
+    }
 }

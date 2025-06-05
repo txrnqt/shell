@@ -77,7 +77,7 @@ async fn handle_new_line(line: &str) -> CrateResult<Command> {
             println!("{}", contents);
         }
         Command::Clear => {
-            println!("{}[2J", 27 as char);
+            println!("{}2J", 27 as char);
         }
         Command::Date => {
             let date = utils::date()?;
@@ -86,6 +86,14 @@ async fn handle_new_line(line: &str) -> CrateResult<Command> {
         }
         Command::Mkdir(s) => {
             let _ = utils::mkdir(&s);
+        }
+        Command::Hostname => {
+            let hostname = utils::hostname()?;
+
+            println!("{}", hostname);
+        }
+        Command::Mv(s) => {
+            utils::mv(&s)?;
         },
         _ => {}
     }
